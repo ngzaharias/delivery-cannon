@@ -1,0 +1,9 @@
+{
+	"name": "delivery-cannon",
+	"version": "0.1.0",
+	"title": "Delivery Cannon",
+	"author": "Koala",
+	"factorio_version": "1.1",
+	"dependencies": [ "base >= 1.1.0" ],
+	"description": "todo"
+}
