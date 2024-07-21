@@ -5,6 +5,7 @@ data:extend({
 		effects = {
 			{ type = "unlock-recipe", recipe = "delivery-cannon", },
 			{ type = "unlock-recipe", recipe = "delivery-cannon-capsule", },
+			{ type = "unlock-recipe", recipe = "delivery-cannon-chest", },
 		},
 		icon = "__delivery-cannon__/graphics/technology/delivery-cannon.png",
 		icon_size = 128,
