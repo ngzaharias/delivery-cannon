@@ -8,25 +8,13 @@ DeliveryCannon.m_ProjectileShadowName = "delivery-cannon-projectile-shadow"
 DeliveryCannon.m_CapsuleTimer = 2 * 60
 DeliveryCannon.m_CapsuleAltitude = 100
 
-script.on_init(function()
-	DeliveryCannon.OnInit()
-end)
-
-function DeliveryCannon.OnInit()
-	game.print("OnInit")
-	global.s_DeliveryCannons = {}
-	global.s_DeliveryCannonQueues = {}
-	global.s_DeliveryCannonPayloads = {}
-end
-
----@param event EntityCreationEvent|EventData.on_entity_cloned|{entity:LuaEntity} Event data
 function DeliveryCannon.OnEntityCreated(event)
 	local entity = Util.GetEntityFromEvent(event)
 	if not entity then 
 		return end
 	if entity.name ~= DeliveryCannon.m_Name then 
 		return end
-	game.print("OnEntityCreated: "..entity.name)
+	game.print("<unknown> created " .. entity.name .. "-" .. entity.unit_number)
 
     ---@type DeliveryCannonInfo
 	local deliveryCannon = {
@@ -38,14 +26,13 @@ function DeliveryCannon.OnEntityCreated(event)
 	global.s_DeliveryCannons[entity.unit_number] = deliveryCannon
 end
 
----@param event EntityRemovalEvent
 function DeliveryCannon.OnEntityRemoved(event)
 	local entity = event.entity
 	if not entity then 
 		return end
 	if entity.name ~= DeliveryCannon.m_Name then 
 		return end
-	game.print("OnEntityRemoved: " .. entity.name)
+	game.print("<unknown> removed " .. entity.name .. "-" .. entity.unit_number)
 
 	global.s_DeliveryCannons[entity.unit_number] = nil
 end
@@ -56,14 +43,9 @@ function DeliveryCannon.OnTick(event)
 			DeliveryCannon.AttemptToFire(deliveryCannon)
 		end
 	end
-
 end
-script.on_event(defines.events.on_tick, DeliveryCannon.OnTick)
 
----@param deliveryCannon DeliveryCannonInfo
 function DeliveryCannon.AttemptToFire(deliveryCannon)
-	--game.print("AttemptToFire")
-
 	if not deliveryCannon.m_Target then
 		return end
 
@@ -73,7 +55,6 @@ function DeliveryCannon.AttemptToFire(deliveryCannon)
 
 		stack.count = stack.count - 1
 
-	---@type DeliveryCannonPayloadInfo
 	local payload = {
 		stack = stack,
 		timer = game.tick + DeliveryCannon.m_CapsuleTimer,
@@ -110,8 +91,6 @@ function DeliveryCannon.AttemptToFire(deliveryCannon)
 	targetSurface.request_to_generate_chunks(targetPosition)
 end
 
----@param deliveryCannon DeliveryCannonInfo
----@return ItemStackDefinition?
 function DeliveryCannon.GetStack(deliveryCannon)
 	if not deliveryCannon then 
 		return end
@@ -124,16 +103,5 @@ function DeliveryCannon.GetStack(deliveryCannon)
 
 	return inventory[1]
 end
-
-script.on_event(defines.events.on_entity_cloned, DeliveryCannon.OnEntityCreated)
-script.on_event(defines.events.on_built_entity, DeliveryCannon.OnEntityCreated)
-script.on_event(defines.events.on_robot_built_entity, DeliveryCannon.OnEntityCreated)
-script.on_event(defines.events.script_raised_built, DeliveryCannon.OnEntityCreated)
-script.on_event(defines.events.script_raised_revive, DeliveryCannon.OnEntityCreated)
-
-script.on_event(defines.events.on_entity_died, DeliveryCannon.OnEntityRemoved)
-script.on_event(defines.events.on_robot_mined_entity, DeliveryCannon.OnEntityRemoved)
-script.on_event(defines.events.on_player_mined_entity, DeliveryCannon.OnEntityRemoved)
-script.on_event(defines.events.script_raised_destroy, DeliveryCannon.OnEntityRemoved)
 
 return DeliveryCannon

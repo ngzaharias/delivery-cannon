@@ -1,10 +1,6 @@
 local DeliveryCannonGUI = {}
 DeliveryCannonGUI.m_RootName = "delivery-cannon-gui"
 
-function DeliveryCannonGUI.Destroy(player, rootName)
-
-end
-
 function DeliveryCannonGUI.OnGuiOpened(event)
 	local entity = event.entity
 	local player = game.get_player(event.player_index)
@@ -13,8 +9,7 @@ function DeliveryCannonGUI.OnGuiOpened(event)
 		return end
 	if entity.name ~= DeliveryCannon.m_Name then 
 		return end
-
-	game.print("OnGuiOpened: " .. entity.name)
+	game.print(player.name .. " opened " .. entity.name .. "-" .. entity.unit_number)
 
 	local gui = player.gui.relative
 
@@ -50,17 +45,12 @@ function DeliveryCannonGUI.OnGuiClosed(event)
 		return end
 	if entity.name ~= DeliveryCannon.m_Name then 
 		return end
-
 	local gui = player.gui.relative[DeliveryCannonGUI.m_RootName]
 	if not gui then 
 		return end
-
-	game.print("OnGuiClosed: " .. entity.name)
+	game.print(player.name .. " closed " .. entity.name .. "-" .. entity.unit_number)
 
 	gui.destroy() 
 end
-
-script.on_event(defines.events.on_gui_opened, DeliveryCannonGUI.OnGuiOpened)
-script.on_event(defines.events.on_gui_closed, DeliveryCannonGUI.OnGuiClosed)
 
 return DeliveryCannonGUI
