@@ -12,6 +12,7 @@ script.on_init(function()
 	global.s_DeliveryCannonChests = {}
 	global.s_DeliveryCannonQueues = {}
 	global.s_DeliveryCannonPayloads = {}
+	global.s_DeliveryCannonGUIs = {}
 end)
 
 function OnEntityCreated(event)
@@ -36,6 +37,10 @@ function OnGuiClosed(event)
 	DeliveryCannonGUI.OnGuiClosed(event)
 end
 
+function OnGuiSelectionChanged(event)
+	DeliveryCannonGUI.OnGuiSelectionChanged(event)
+end
+
 script.on_event(defines.events.on_entity_cloned, OnEntityCreated)
 script.on_event(defines.events.on_built_entity, OnEntityCreated)
 script.on_event(defines.events.on_robot_built_entity, OnEntityCreated)
@@ -51,3 +56,4 @@ script.on_event(defines.events.on_tick, OnTick)
 
 script.on_event(defines.events.on_gui_opened, OnGuiOpened)
 script.on_event(defines.events.on_gui_closed, OnGuiClosed)
+script.on_event(defines.events.on_gui_selection_state_changed, OnGuiSelectionChanged)

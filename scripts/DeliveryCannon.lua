@@ -8,6 +8,14 @@ DeliveryCannon.m_ProjectileShadowName = "delivery-cannon-projectile-shadow"
 DeliveryCannon.m_CapsuleTimer = 2 * 60
 DeliveryCannon.m_CapsuleAltitude = 100
 
+function DeliveryCannon.IsValidTarget(target)
+	return target 
+		and target.m_Entity 
+		and target.m_Entity.valid
+		and target.m_Entity.position
+		and target.m_Entity.surface
+end
+
 function DeliveryCannon.OnEntityCreated(event)
 	local entity = Util.GetEntityFromEvent(event)
 	if not entity then 
@@ -20,7 +28,7 @@ function DeliveryCannon.OnEntityCreated(event)
 	local deliveryCannon = {
 		m_Entity = entity,
 		m_Handle = entity.unit_number,
-		m_Target = { position = { x = 0, y = 0 }, surface = entity.surface }
+		m_Target = nil,
 	}
 
 	global.s_DeliveryCannons[entity.unit_number] = deliveryCannon
@@ -38,22 +46,22 @@ function DeliveryCannon.OnEntityRemoved(event)
 end
 
 function DeliveryCannon.OnTick(event)
-	for _, deliveryCannon in pairs(global.s_DeliveryCannons) do
-		if (event.tick + deliveryCannon.m_Handle) % 60 == 0 then
-			DeliveryCannon.AttemptToFire(deliveryCannon)
+	for _, cannon in pairs(global.s_DeliveryCannons) do
+		if (event.tick + cannon.m_Handle) % 60 == 0 then
+			DeliveryCannon.AttemptToFire(cannon)
 		end
 	end
 end
 
-function DeliveryCannon.AttemptToFire(deliveryCannon)
-	if not deliveryCannon.m_Target then
+function DeliveryCannon.AttemptToFire(cannon)
+	local stack = DeliveryCannon.GetStack(cannon)
+	local target = cannon.m_Target
+	if not DeliveryCannon.IsValidTarget(target) then
 		return end
-
-	local stack = DeliveryCannon.GetStack(deliveryCannon)
 	if not stack then 
 		return end
 
-		stack.count = stack.count - 1
+	stack.count = stack.count - 1
 
 	local payload = {
 		stack = stack,
@@ -62,16 +70,16 @@ function DeliveryCannon.AttemptToFire(deliveryCannon)
 	}
 	table.insert(global.s_DeliveryCannonPayloads, payload)
 
-	deliveryCannon.m_Entity.create_build_effect_smoke()
-	deliveryCannon.m_Entity.surface.create_entity {
+	cannon.m_Entity.create_build_effect_smoke()
+	cannon.m_Entity.surface.create_entity {
 		name = DeliveryCannon.m_BeamName,
-		position = Util.Vector2Add(deliveryCannon.m_Entity.position, DeliveryCannon.m_BeamOffset ),
-		target = Util.Vector2Add(deliveryCannon.m_Entity.position, {x = 0, y = -200})
+		position = Util.Vector2Add(cannon.m_Entity.position, DeliveryCannon.m_BeamOffset ),
+		target = Util.Vector2Add(cannon.m_Entity.position, {x = 0, y = -200})
 	}
 
 	local speed = DeliveryCannon.m_CapsuleAltitude / DeliveryCannon.m_CapsuleTimer
-	local targetPosition = deliveryCannon.m_Target.position
-	local targetSurface = deliveryCannon.m_Target.surface
+	local targetPosition = target.m_Entity.position
+	local targetSurface = target.m_Entity.surface
 	local capsuleStartPosition = Util.Vector2Add(targetPosition, { x = 0, y = -DeliveryCannon.m_CapsuleAltitude })
 	local shadowStartPosition = Util.Vector2Add(targetPosition, { x = DeliveryCannon.m_CapsuleAltitude, y = 0 })
 	targetSurface.create_entity {
@@ -91,11 +99,10 @@ function DeliveryCannon.AttemptToFire(deliveryCannon)
 	targetSurface.request_to_generate_chunks(targetPosition)
 end
 
-function DeliveryCannon.GetStack(deliveryCannon)
-	if not deliveryCannon then 
+function DeliveryCannon.GetStack(cannon)
+	if not cannon then 
 		return end
-
-	local inventory = deliveryCannon.m_Entity.get_output_inventory()
+	local inventory = cannon.m_Entity.get_output_inventory()
 	if not inventory then 
 		return end
 	if inventory.is_empty() then 
