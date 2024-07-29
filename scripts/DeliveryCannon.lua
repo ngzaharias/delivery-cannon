@@ -51,6 +51,17 @@ function DeliveryCannon.OnTick(event)
 			DeliveryCannon.AttemptToFire(cannon)
 		end
 	end
+
+	-- process payloads
+	for i = #global.s_DeliveryCannonPayloads, 1, -1 do
+		local payload = global.s_DeliveryCannonPayloads[i]
+		if payload then
+			if event.tick >= payload.arrival then
+				DeliveryCannon.DropPayload(payload)
+				table.remove(global.s_DeliveryCannonPayloads, i)
+			end
+		end
+	end
 end
 
 function DeliveryCannon.AttemptToFire(cannon)
@@ -64,9 +75,10 @@ function DeliveryCannon.AttemptToFire(cannon)
 	stack.count = stack.count - 1
 
 	local payload = {
-		stack = stack,
-		timer = game.tick + DeliveryCannon.m_CapsuleTimer,
-		health = 1
+		prototype = stack.prototype,
+		target = target,
+		arrival = game.tick + DeliveryCannon.m_CapsuleTimer,
+		health = 1,
 	}
 	table.insert(global.s_DeliveryCannonPayloads, payload)
 
@@ -97,6 +109,14 @@ function DeliveryCannon.AttemptToFire(cannon)
 	targetSurface.request_to_generate_chunks(capsuleStartPosition)
 	targetSurface.request_to_generate_chunks(shadowStartPosition)
 	targetSurface.request_to_generate_chunks(targetPosition)
+end
+
+function DeliveryCannon.DropPayload(payload)
+	local chest = payload.target.m_Entity
+	local prototype = payload.prototype
+	if chest then
+		chest.insert({name = prototype.name, count = 1})
+	end
 end
 
 function DeliveryCannon.GetStack(cannon)
