@@ -27,6 +27,7 @@ end
 
 function OnTick(event)
 	DeliveryCannon.OnTick(event)
+	DeliveryCannonChest.OnTick(event)
 end
 
 function OnGuiOpened(event)

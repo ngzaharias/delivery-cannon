@@ -122,15 +122,11 @@ data:extend({
 				}
 			}
 		},
-		crafting_categories = { "crafting" },
+		crafting_categories = { "delivery-cannon" },
 		crafting_speed = 1,
-		energy_source = {
-			type = "void",
-		},
+		energy_source = { type = "void", },
 		energy_usage = "100kW",
-		module_specification = {
-			module_slots = 0
-		},
+		module_specification = { module_slots = 0 },
 		allowed_effects = {},
 	},
 	{

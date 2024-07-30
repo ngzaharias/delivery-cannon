@@ -106,3 +106,50 @@ data:extend({
 		flags = { "not-on-map", "placeable-off-grid"},
 	  },
 })
+
+for _, recipe in pairs(delivery_cannon_recipes) do
+	if data.raw[recipe.type][recipe.name] then
+		local base = data.raw[recipe.type][recipe.name]
+		local amount = base.stack_size
+
+		local order = ""
+		local subgroup = base.subgroup and data.raw["item-subgroup"][base.subgroup] or nil
+		local group = subgroup and data.raw["item-group"][subgroup.group] or nil
+		if group then
+			order = (group.order or group.name) .. "-|-" .. (subgroup.order or subgroup.name) .. "-|-"
+		end
+		order = order .. (base.order or base.name)
+
+		data:extend({
+			{
+				type = "item",
+				name = "delivery-cannon-package-" .. recipe.name,
+				icon = "__delivery-cannon__/graphics/icons/delivery-cannon-capsule.png",
+				icon_size = 64,
+				order = order,
+				subgroup = base.subgroup or "delivery-cannon-capsules",
+				stack_size = 1,
+			},
+			{
+				type = "recipe",
+				name = "delivery-cannon-pack-" .. recipe.name,
+				result = "delivery-cannon-package-" .. recipe.name,
+				enabled = true,
+				energy_required = 5,
+				ingredients = {
+					{ "delivery-cannon-capsule", 1 },
+					{ recipe.name, base.stack_size },
+				},
+          		category = "delivery-cannon",
+				requester_paste_multiplier = 1,
+				always_show_made_in = false,
+				hide_from_player_crafting = true,
+				allow_decomposition = false,
+				icon = base.icon,
+				icon_size = base.icon_size,
+				icon_mipmaps = base.icon_mipmaps,
+				icons = base.icons,
+			},
+		})
+	end
+end
