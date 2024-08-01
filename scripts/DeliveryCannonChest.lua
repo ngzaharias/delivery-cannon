@@ -8,7 +8,7 @@ function DeliveryCannonChest.OnEntityCreated(event)
 		return end
 	if entity.name ~= DeliveryCannonChest.m_Name then 
 		return end
-	game.print("<unknown> created " .. entity.name .. "-" .. entity.unit_number)
+	-- game.print("<unknown> created " .. entity.name .. "-" .. entity.unit_number)
 
 	local chest = {
 		m_Entity = entity,
@@ -24,7 +24,7 @@ function DeliveryCannonChest.OnEntityRemoved(event)
 		return end
 	if entity.name ~= DeliveryCannonChest.m_Name then 
 		return end
-	game.print("<unknown> removed " .. entity.name .. "-" .. entity.unit_number)
+	-- game.print("<unknown> removed " .. entity.name .. "-" .. entity.unit_number)
 
 	global.s_DeliveryCannonChests[entity.unit_number] = nil
 end
@@ -43,15 +43,11 @@ end
 
 function DeliveryCannonChest.DropPayload(payload)
 	local chest = payload.target.m_Entity
-	local prototype = payload.prototype
+	if not chest then
+		return end
 
-	local name = string.sub(prototype.name, DeliveryCannonChest.m_Prefix + 1)
-	local base = game.item_prototypes[name]
-
-	if chest then
-		chest.insert({ name = "delivery-cannon-capsule", count = 1 })
-		chest.insert({ name = base.name, count = base.stack_size })
-	end
+	local package = payload.package
+	local spill = package.count - chest.insert(package)
 end
 
 return DeliveryCannonChest

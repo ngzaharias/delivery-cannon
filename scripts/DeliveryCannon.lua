@@ -22,7 +22,7 @@ function DeliveryCannon.OnEntityCreated(event)
 		return end
 	if entity.name ~= DeliveryCannon.m_Name then 
 		return end
-	game.print("<unknown> created " .. entity.name .. "-" .. entity.unit_number)
+	-- game.print("<unknown> created " .. entity.name .. "-" .. entity.unit_number)
 
     ---@type DeliveryCannonInfo
 	local deliveryCannon = {
@@ -40,7 +40,7 @@ function DeliveryCannon.OnEntityRemoved(event)
 		return end
 	if entity.name ~= DeliveryCannon.m_Name then 
 		return end
-	game.print("<unknown> removed " .. entity.name .. "-" .. entity.unit_number)
+	-- game.print("<unknown> removed " .. entity.name .. "-" .. entity.unit_number)
 
 	global.s_DeliveryCannons[entity.unit_number] = nil
 end
@@ -61,8 +61,12 @@ function DeliveryCannon.AttemptToFire(cannon)
 	if not stack then 
 		return end
 
+	local package = DeliveryCannon.GetPackage(stack.prototype)
+	if not target.m_Entity.can_insert(package) then
+		return end
+
 	local payload = {
-		prototype = stack.prototype,
+		package = package,
 		target = target,
 		arrival = game.tick + DeliveryCannon.m_CapsuleTimer,
 		health = 1,
@@ -111,6 +115,12 @@ function DeliveryCannon.GetStack(cannon)
 		return end
 
 	return inventory[1]
+end
+
+function DeliveryCannon.GetPackage(prototype)
+	local name = string.sub(prototype.name, DeliveryCannonChest.m_Prefix + 1)
+	local base = game.item_prototypes[name]
+	return { name = base.name, count = base.stack_size }
 end
 
 return DeliveryCannon

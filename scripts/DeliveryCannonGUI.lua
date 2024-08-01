@@ -28,7 +28,7 @@ function DeliveryCannonGUI.OnGuiOpened(event)
 		return end
 	if entity.name ~= DeliveryCannon.m_Name then 
 		return end
-	game.print(player.name .. " opened " .. entity.name .. "-" .. entity.unit_number)
+	-- game.print(player.name .. " opened " .. entity.name .. "-" .. entity.unit_number)
 
 	local gui = player.gui.relative
 
@@ -90,7 +90,7 @@ function DeliveryCannonGUI.OnGuiClosed(event)
 	local gui = player.gui.relative[DeliveryCannonGUI.m_RootName]
 	if not gui then 
 		return end
-	game.print(player.name .. " closed " .. entity.name .. "-" .. entity.unit_number)
+	-- game.print(player.name .. " closed " .. entity.name .. "-" .. entity.unit_number)
 
 	gui.destroy() 
 end
